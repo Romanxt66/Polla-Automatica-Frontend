@@ -1,0 +1,7 @@
+.git
+.dart_tool
+build
+android
+.idea
+*.iml
+test

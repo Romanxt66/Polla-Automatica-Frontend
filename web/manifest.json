@@ -1,11 +1,11 @@
 {
-    "name": "polla_app",
-    "short_name": "polla_app",
+    "name": "Polla Automática",
+    "short_name": "Polla",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Polla futbolera automática: pronostica marcadores con tus amigos.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

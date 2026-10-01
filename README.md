@@ -39,3 +39,14 @@ test/        # modelos y widgets (API simulada con mocktail)
 flutter analyze
 flutter test
 ```
+
+## Despliegue web (Coolify)
+El `Dockerfile` compila Flutter web y lo sirve con nginx (puerto 80).
+
+1. En Coolify: *New Resource → Public/Private Repository*, repo `Polla-Automatica-Frontend`,
+   rama `main`, **Build Pack: Dockerfile**, puerto expuesto **80**.
+2. Asigna el dominio (ej. `https://polla.tu-dominio.com`).
+3. La URL de la API se fija al compilar: por defecto `https://www.pollaf.softlane.click`.
+   Para otra, define el Build Argument `API_URL` en Coolify.
+4. **Backend:** en sus variables de entorno pon `CORS_ORIGINS` con la URL exacta del
+   frontend (sin `/` al final) y redespliega; si no, el navegador bloquea las llamadas.
