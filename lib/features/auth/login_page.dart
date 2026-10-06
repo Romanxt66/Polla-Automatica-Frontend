@@ -17,6 +17,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _loading = false;
+  bool _obscure = true;
 
   @override
   void dispose() {
@@ -42,7 +43,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return AuthShell(
-      subtitle: 'Pronostica con tus amigos',
+      title: '¡Bienvenido de nuevo!',
+      subtitle: 'Ingresa a tu cuenta para registrar tus pronósticos',
       form: Form(
         key: _form,
         child: Column(
@@ -53,7 +55,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               controller: _email,
               keyboardType: TextInputType.emailAddress,
               autofillHints: const [AutofillHints.email],
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                prefixIcon: Icon(Icons.alternate_email, size: 18),
+              ),
               validator: (v) => (v == null || !v.contains('@'))
                   ? 'Ingresa un email válido'
                   : null,
@@ -61,9 +66,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _password,
-              obscureText: true,
+              obscureText: _obscure,
               autofillHints: const [AutofillHints.password],
-              decoration: const InputDecoration(labelText: 'Contraseña'),
+              decoration: InputDecoration(
+                labelText: 'Contraseña',
+                prefixIcon: const Icon(Icons.lock_outline, size: 18),
+                suffixIcon: IconButton(
+                  tooltip: _obscure
+                      ? 'Mostrar contraseña'
+                      : 'Ocultar contraseña',
+                  icon: Icon(
+                    _obscure
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    size: 18,
+                  ),
+                  onPressed: () => setState(() => _obscure = !_obscure),
+                ),
+              ),
               validator: (v) =>
                   (v == null || v.isEmpty) ? 'Ingresa tu contraseña' : null,
               onFieldSubmitted: (_) => _submit(),

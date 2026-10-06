@@ -93,42 +93,164 @@ class AsyncBody<T> extends StatelessWidget {
   );
 }
 
-/// Pantalla de acceso: marca mínima y una tarjeta de vidrio con el formulario.
+/// Pantalla de acceso: marca arriba, mensaje a la izquierda (solo en pantallas
+/// anchas) y una tarjeta de vidrio con el formulario.
 class AuthShell extends StatelessWidget {
-  const AuthShell({super.key, required this.subtitle, required this.form});
+  const AuthShell({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.form,
+  });
+  final String title;
   final String subtitle;
   final Widget form;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Centered(
-              maxWidth: 400,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.sports_soccer, size: 40, color: c.brand),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Polla Automática',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: c.inkMuted)),
-                  const SizedBox(height: 24),
-                  GlassCard(padding: const EdgeInsets.all(20), child: form),
-                ],
+    final card = ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 400),
+      child: GlassCard(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.4,
               ),
             ),
-          ),
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13, color: c.inkMuted),
+            ),
+            const SizedBox(height: 28),
+            form,
+          ],
         ),
       ),
+    );
+    return Scaffold(
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, box) {
+            final wide = box.maxWidth >= 900;
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: box.maxHeight),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: wide ? 48 : 16,
+                    vertical: 24,
+                  ),
+                  child: Column(
+                    children: [
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: _Brand(),
+                      ),
+                      SizedBox(height: wide ? 72 : 32),
+                      if (wide)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Expanded(child: _Hero()),
+                            const SizedBox(width: 48),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: card,
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        card,
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _Brand extends StatelessWidget {
+  const _Brand();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: c.brand,
+            borderRadius: BorderRadius.circular(9),
+          ),
+          child: Icon(Icons.sports_soccer, size: 20, color: c.onBrand),
+        ),
+        const SizedBox(width: 10),
+        const Text(
+          'Polla Automática',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
+  }
+}
+
+class _Hero extends StatelessWidget {
+  const _Hero();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    const style = TextStyle(
+      fontSize: 48,
+      height: 1.1,
+      fontWeight: FontWeight.w800,
+      letterSpacing: -1.2,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text.rich(
+          TextSpan(
+            style: style,
+            children: [
+              const TextSpan(text: 'Pronostica con amigos y domina la '),
+              TextSpan(
+                text: 'tabla de posiciones',
+                style: TextStyle(color: c.brand),
+              ),
+              const TextSpan(text: '.'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 440),
+          child: Text(
+            'Crea tu polla en segundos, suma puntos cuando termina cada partido y compite con tu grupo.',
+            style: TextStyle(fontSize: 16, height: 1.5, color: c.inkMuted),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -44,7 +44,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return AuthShell(
-      subtitle: 'Crea tu cuenta',
+      title: 'Crea tu cuenta',
+      subtitle: 'Únete y pronostica con tus amigos',
       form: Form(
         key: _form,
         child: Column(

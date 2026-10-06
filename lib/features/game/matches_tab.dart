@@ -272,9 +272,7 @@ class _MatchCardState extends ConsumerState<MatchCard> {
               ],
             ),
           ],
-          const SizedBox(height: 12),
-          Divider(color: c.line),
-          const SizedBox(height: 10),
+          const SizedBox(height: 14),
           AnimatedSize(
             duration: const Duration(milliseconds: 150),
             alignment: Alignment.topLeft,

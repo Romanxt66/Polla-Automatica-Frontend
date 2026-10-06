@@ -31,29 +31,23 @@ class AppColors extends ThemeExtension<AppColors> {
   final List<BoxShadow> shadow;
 
   static const dark = AppColors(
-    bg000: Color(0xFF0E1411),
-    bg100: Color(0xFF13201A),
-    glow: Color(0xFF1F3D2E),
-    glass100: Color.fromRGBO(28, 42, 35, 0.55),
-    glass200: Color.fromRGBO(36, 54, 45, 0.72),
+    bg000: Color(0xFF07110D),
+    bg100: Color(0xFF0B1A14),
+    glow: Color(0xFF0F3A2A),
+    glass100: Color.fromRGBO(16, 36, 28, 0.55),
+    glass200: Color.fromRGBO(5, 16, 12, 0.7),
     line: Color.fromRGBO(168, 200, 180, 0.12),
     lineStrong: Color.fromRGBO(168, 200, 180, 0.28),
     ink: Color(0xFFE4EBE6),
     inkMuted: Color(0xFF93A39A),
-    brand: Color(0xFF6FA585),
-    brandStrong: Color(0xFF8FBFA3),
-    brandSoft: Color.fromRGBO(111, 165, 133, 0.16),
-    onBrand: Color(0xFF0C1510),
+    brand: Color(0xFF34D399),
+    brandStrong: Color(0xFF6EE7B7),
+    brandSoft: Color.fromRGBO(52, 211, 153, 0.12),
+    onBrand: Color(0xFF04130C),
     live: Color(0xFFD9A441),
     liveSoft: Color.fromRGBO(217, 164, 65, 0.14),
     danger: Color(0xFFE08A7A),
-    shadow: [
-      BoxShadow(
-        color: Color.fromRGBO(0, 0, 0, 0.35),
-        blurRadius: 24,
-        offset: Offset(0, 8),
-      ),
-    ],
+    shadow: [],
   );
 
   static const light = AppColors(
@@ -73,13 +67,7 @@ class AppColors extends ThemeExtension<AppColors> {
     live: Color(0xFF8A5A12),
     liveSoft: Color.fromRGBO(138, 90, 18, 0.10),
     danger: Color(0xFFA33B2A),
-    shadow: [
-      BoxShadow(
-        color: Color.fromRGBO(22, 32, 27, 0.08),
-        blurRadius: 20,
-        offset: Offset(0, 6),
-      ),
-    ],
+    shadow: [],
   );
 
   @override
