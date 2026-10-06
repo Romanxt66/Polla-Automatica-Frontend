@@ -68,10 +68,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               ),
               validator: (v) {
                 final s = v?.trim() ?? '';
-                if (s.length < 3 || s.length > 50)
+                if (s.length < 3 || s.length > 50) {
                   return 'Entre 3 y 50 caracteres';
-                if (!RegExp(r'^[A-Za-z0-9_.-]+$').hasMatch(s))
+                }
+                if (!RegExp(r'^[A-Za-z0-9_.-]+$').hasMatch(s)) {
                   return 'Caracteres no válidos';
+                }
                 return null;
               },
             ),

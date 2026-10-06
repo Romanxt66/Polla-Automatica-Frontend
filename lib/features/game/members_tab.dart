@@ -74,8 +74,9 @@ class _MembersTabState extends ConsumerState<MembersTab> {
                         await Clipboard.setData(
                           ClipboardData(text: _invite!.code),
                         );
-                        if (context.mounted)
+                        if (context.mounted) {
                           showInfo(context, 'Código copiado');
+                        }
                       },
                     ),
                   ],
