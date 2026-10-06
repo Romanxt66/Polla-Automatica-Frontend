@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/theme.dart';
 import '../../core/ui.dart';
 
 class LeaderboardTab extends ConsumerWidget {
@@ -17,30 +18,83 @@ class LeaderboardTab extends ConsumerWidget {
       child: AsyncBody(
         value: board,
         onRetry: () => ref.invalidate(leaderboardProvider(groupId)),
-        data: (rows) => ListView(
-          padding: const EdgeInsets.all(12),
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8),
-              child: Text(
-                'El ranking se actualiza solo cuando termina cada partido.',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            for (final r in rows)
-              Card(
-                color: r.userId == me?.id ? Theme.of(context).colorScheme.primaryContainer : null,
-                child: ListTile(
-                  leading: CircleAvatar(child: Text('${r.rank}')),
-                  title: Text(r.username),
-                  subtitle: Text(
-                      '${r.exactHits} ${r.exactHits == 1 ? 'exacto' : 'exactos'} · ${r.scored} ${r.scored == 1 ? 'partido' : 'partidos'}'),
-                  trailing: Text('${r.points} pts',
-                      style: Theme.of(context).textTheme.titleMedium),
+        data: (rows) {
+          final c = context.colors;
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
+                child: Text(
+                  'El ranking se actualiza solo cuando termina cada partido.',
+                  style: TextStyle(fontSize: 13, color: c.inkMuted),
                 ),
               ),
-          ],
-        ),
+              GlassCard(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    for (var i = 0; i < rows.length; i++) ...[
+                      if (i > 0) Divider(color: c.line),
+                      Container(
+                        color: rows[i].userId == me?.id ? c.brandSoft : null,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 28,
+                              child: Text(
+                                '${rows[i].rank}',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: rows[i].rank == 1
+                                      ? c.brandStrong
+                                      : c.inkMuted,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    rows[i].username,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${rows[i].exactHits} ${rows[i].exactHits == 1 ? 'exacto' : 'exactos'} · ${rows[i].scored} ${rows[i].scored == 1 ? 'partido' : 'partidos'}',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: c.inkMuted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              '${rows[i].points} pts',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

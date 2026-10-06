@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/providers.dart';
+import '../../core/theme.dart';
 import '../../core/ui.dart';
 
 class HomePage extends ConsumerWidget {
@@ -22,9 +23,14 @@ class HomePage extends ConsumerWidget {
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, controller.text), child: const Text('Unirme')),
+            onPressed: () => Navigator.pop(ctx, controller.text),
+            child: const Text('Unirme'),
+          ),
         ],
       ),
     );
@@ -43,26 +49,25 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groups = ref.watch(groupsProvider);
     final user = ref.watch(authProvider).value;
+    final c = context.colors;
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 72,
+        titleSpacing: 16,
         title: const Text('Mis grupos'),
         actions: [
           if (user != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Center(child: Text(user.username)),
+            Text(
+              user.username,
+              style: TextStyle(color: c.inkMuted, fontSize: 13),
             ),
           IconButton(
             tooltip: 'Cerrar sesión',
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, size: 20),
             onPressed: () => ref.read(authProvider.notifier).logout(),
           ),
+          const SizedBox(width: 8),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/groups/new'),
-        icon: const Icon(Icons.add),
-        label: const Text('Crear grupo'),
       ),
       body: Centered(
         child: RefreshIndicator(
@@ -71,32 +76,75 @@ class HomePage extends ConsumerWidget {
             value: groups,
             onRetry: () => ref.invalidate(groupsProvider),
             data: (list) => ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
               children: [
-                OutlinedButton.icon(
-                  onPressed: () => _join(context, ref),
-                  icon: const Icon(Icons.group_add),
-                  label: const Text('Tengo un código de invitación'),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: () => context.push('/groups/new'),
+                      icon: const Icon(Icons.add, size: 18),
+                      label: const Text('Crear grupo'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => _join(context, ref),
+                      icon: const Icon(Icons.group_add_outlined, size: 18),
+                      label: const Text('Tengo un código de invitación'),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 if (list.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(32),
+                  Padding(
+                    padding: const EdgeInsets.all(32),
                     child: Text(
                       'Aún no estás en ningún grupo.\nCrea uno e invita a tus amigos.',
                       textAlign: TextAlign.center,
+                      style: TextStyle(color: c.inkMuted),
                     ),
-                  ),
-                for (final g in list)
-                  Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.emoji_events_outlined),
-                      title: Text(g.name),
-                      subtitle: Text(
-                          '${competitionNames[g.competitionCode] ?? g.competitionCode} · ${g.memberCount} ${g.memberCount == 1 ? 'miembro' : 'miembros'}'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => context.push('/groups/${g.id}'),
-                    ),
+                  )
+                else
+                  CardGrid(
+                    children: [
+                      for (final g in list)
+                        InkWell(
+                          borderRadius: BorderRadius.circular(radiusMd),
+                          onTap: () => context.push('/groups/${g.id}'),
+                          child: GlassCard(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        g.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${competitionNames[g.competitionCode] ?? g.competitionCode} · ${g.memberCount} ${g.memberCount == 1 ? 'miembro' : 'miembros'}',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: c.inkMuted,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(Icons.chevron_right, color: c.inkMuted),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
               ],
             ),

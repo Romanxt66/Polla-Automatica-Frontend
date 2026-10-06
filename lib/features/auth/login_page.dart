@@ -29,7 +29,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (!_form.currentState!.validate()) return;
     setState(() => _loading = true);
     try {
-      await ref.read(authProvider.notifier).login(_email.text.trim(), _password.text);
+      await ref
+          .read(authProvider.notifier)
+          .login(_email.text.trim(), _password.text);
     } catch (e) {
       if (mounted) showError(context, e);
     } finally {
@@ -39,59 +41,43 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Centered(
-              maxWidth: 400,
-              child: Form(
-                key: _form,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Icon(Icons.sports_soccer, size: 64),
-                    const SizedBox(height: 8),
-                    Text('Polla Automática',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 32),
-                    TextFormField(
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      autofillHints: const [AutofillHints.email],
-                      decoration: const InputDecoration(labelText: 'Email'),
-                      validator: (v) =>
-                          (v == null || !v.contains('@')) ? 'Ingresa un email válido' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _password,
-                      obscureText: true,
-                      autofillHints: const [AutofillHints.password],
-                      decoration: const InputDecoration(labelText: 'Contraseña'),
-                      validator: (v) => (v == null || v.isEmpty) ? 'Ingresa tu contraseña' : null,
-                      onFieldSubmitted: (_) => _submit(),
-                    ),
-                    const SizedBox(height: 24),
-                    FilledButton(
-                      onPressed: _loading ? null : _submit,
-                      child: _loading
-                          ? const SizedBox(
-                              height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Text('Entrar'),
-                    ),
-                    TextButton(
-                      onPressed: () => context.go('/register'),
-                      child: const Text('¿No tienes cuenta? Regístrate'),
-                    ),
-                  ],
-                ),
-              ),
+    return AuthShell(
+      subtitle: 'Pronostica con tus amigos',
+      form: Form(
+        key: _form,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              controller: _email,
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              decoration: const InputDecoration(labelText: 'Email'),
+              validator: (v) => (v == null || !v.contains('@'))
+                  ? 'Ingresa un email válido'
+                  : null,
             ),
-          ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _password,
+              obscureText: true,
+              autofillHints: const [AutofillHints.password],
+              decoration: const InputDecoration(labelText: 'Contraseña'),
+              validator: (v) =>
+                  (v == null || v.isEmpty) ? 'Ingresa tu contraseña' : null,
+              onFieldSubmitted: (_) => _submit(),
+            ),
+            const SizedBox(height: 24),
+            FilledButton(
+              onPressed: _loading ? null : _submit,
+              child: LoadingLabel(loading: _loading, label: 'Entrar'),
+            ),
+            TextButton(
+              onPressed: () => context.go('/register'),
+              child: const Text('¿No tienes cuenta? Regístrate'),
+            ),
+          ],
         ),
       ),
     );

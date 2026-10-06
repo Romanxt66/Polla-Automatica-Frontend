@@ -6,15 +6,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/providers.dart';
 import 'core/router.dart';
+import 'core/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('es');
   final prefs = await SharedPreferences.getInstance();
-  runApp(ProviderScope(
-    overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
-    child: const PollaApp(),
-  ));
+  runApp(
+    ProviderScope(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+      child: const PollaApp(),
+    ),
+  );
 }
 
 class PollaApp extends ConsumerWidget {
@@ -27,15 +30,15 @@ class PollaApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Polla Automática',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: Colors.green,
-        useMaterial3: true,
-        inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder()),
-      ),
+      theme: buildTheme(Brightness.light),
+      darkTheme: buildTheme(Brightness.dark),
+      themeMode: ThemeMode.system,
       routerConfig: router,
-      builder: (context, child) => auth.isLoading
-          ? const Scaffold(body: Center(child: CircularProgressIndicator()))
-          : child!,
+      builder: (context, child) => AppBackground(
+        child: auth.isLoading
+            ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+            : child!,
+      ),
     );
   }
 }

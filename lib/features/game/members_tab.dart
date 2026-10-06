@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/theme.dart';
 import '../../core/ui.dart';
 import '../../models/models.dart';
 
@@ -21,7 +22,9 @@ class _MembersTabState extends ConsumerState<MembersTab> {
   Future<void> _createInvite() async {
     setState(() => _loading = true);
     try {
-      final invite = await ref.read(apiProvider).createInvite(widget.detail.group.id);
+      final invite = await ref
+          .read(apiProvider)
+          .createInvite(widget.detail.group.id);
       if (mounted) setState(() => _invite = invite);
     } catch (e) {
       if (mounted) showError(context, e);
@@ -33,62 +36,111 @@ class _MembersTabState extends ConsumerState<MembersTab> {
   @override
   Widget build(BuildContext context) {
     final detail = widget.detail;
-    final theme = Theme.of(context);
+    final c = context.colors;
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text('Invita a tus amigos', style: theme.textTheme.titleMedium),
-                const SizedBox(height: 4),
-                Text(
-                    '${competitionNames[detail.group.competitionCode] ?? detail.group.competitionCode}. Comparte el código y se unen desde "Tengo un código de invitación".'),
-                const SizedBox(height: 12),
-                if (_invite != null) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SelectableText(_invite!.code,
-                          style: theme.textTheme.headlineSmall?.copyWith(letterSpacing: 4)),
-                      IconButton(
-                        tooltip: 'Copiar',
-                        icon: const Icon(Icons.copy),
-                        onPressed: () async {
-                          await Clipboard.setData(ClipboardData(text: _invite!.code));
-                          if (context.mounted) showInfo(context, 'Código copiado');
-                        },
+        GlassCard(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Invita a tus amigos',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${competitionNames[detail.group.competitionCode] ?? detail.group.competitionCode}. Comparte el código y se unen desde "Tengo un código de invitación".',
+                style: TextStyle(fontSize: 13, color: c.inkMuted),
+              ),
+              const SizedBox(height: 16),
+              if (_invite != null) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SelectableText(
+                      _invite!.code,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 4,
                       ),
+                    ),
+                    IconButton(
+                      tooltip: 'Copiar',
+                      icon: const Icon(Icons.copy, size: 18),
+                      onPressed: () async {
+                        await Clipboard.setData(
+                          ClipboardData(text: _invite!.code),
+                        );
+                        if (context.mounted)
+                          showInfo(context, 'Código copiado');
+                      },
+                    ),
+                  ],
+                ),
+                if (_invite!.expiresAt != null)
+                  Text(
+                    'Vence el ${formatKickoff(_invite!.expiresAt!.toUtc())}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 13, color: c.inkMuted),
+                  ),
+                const SizedBox(height: 12),
+              ],
+              Align(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  onPressed: _loading ? null : _createInvite,
+                  icon: const Icon(Icons.link, size: 18),
+                  label: Text(
+                    _invite == null ? 'Generar código' : 'Generar otro código',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+          child: Overline('Miembros (${detail.members.length})'),
+        ),
+        GlassCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              for (var i = 0; i < detail.members.length; i++) ...[
+                if (i > 0) Divider(color: c.line),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          detail.members[i].username,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      if (detail.members[i].userId == detail.group.ownerId)
+                        StatusChip(
+                          text: 'Dueño',
+                          color: c.brandStrong,
+                          soft: c.brandSoft,
+                        ),
                     ],
                   ),
-                  if (_invite!.expiresAt != null)
-                    Text('Vence el ${formatKickoff(_invite!.expiresAt!.toUtc())}',
-                        textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
-                  const SizedBox(height: 8),
-                ],
-                FilledButton.tonalIcon(
-                  onPressed: _loading ? null : _createInvite,
-                  icon: const Icon(Icons.link),
-                  label: Text(_invite == null ? 'Generar código' : 'Generar otro código'),
                 ),
               ],
-            ),
+            ],
           ),
         ),
-        const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Text('Miembros (${detail.members.length})', style: theme.textTheme.titleMedium),
-        ),
-        for (final m in detail.members)
-          ListTile(
-            leading: const CircleAvatar(child: Icon(Icons.person)),
-            title: Text(m.username),
-            trailing: m.userId == detail.group.ownerId ? const Chip(label: Text('Dueño')) : null,
-          ),
       ],
     );
   }
