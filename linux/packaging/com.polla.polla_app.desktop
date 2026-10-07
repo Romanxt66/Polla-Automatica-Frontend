@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Polla Automática
+Comment=Polla futbolera con tus amigos
+Exec=@EXEC@
+Icon=polla-automatica
+Terminal=false
+Categories=Game;Sports;
